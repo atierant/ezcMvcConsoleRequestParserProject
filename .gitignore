@@ -1,0 +1,9 @@
+doc/html/*
+var
+*~
+cache.properties
+doc/latex/*
+test-report/*
+build/*
+rangements
+
