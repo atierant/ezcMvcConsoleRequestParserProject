@@ -28,6 +28,11 @@ On fonctionnera en deux temps : d'abord en laissant vide ce qui est non récupé
 Par exemple, le user agent, ou du accept encoding, risquent d'être difficiles à récupérer.
 donc ne pas rajouter un --user-agent= de ta propre initiative. C'est tout à fait envisageable, mais qu'on fera éventuellement après.
 
+Repository du projet :
+----------------------
+
+https://github.com/atierant/ezcMvcConsoleRequestParserProject
+
 Notes de documentation :
 ------------------------
 _ignore_user_abort_  
@@ -112,5 +117,8 @@ $ php -f somefile.php a=1 b[]=2 b[]=3
 This will set $_GET['a'] to '1' and $_GET['b'] to array('2', '3').
 
 -------------------------------
+read arguments from $argv of the form --name=VALUE and -flag.
+http://www.php.net/manual/fr/features.commandline.php#86616
+
 
 
