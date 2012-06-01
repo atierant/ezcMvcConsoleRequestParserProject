@@ -135,6 +135,8 @@ To Do :
 Commentaires sur les classes existantes :
 -----------------------------------------
 1. La classe ezcMvcRequest, objet de transition
+-----------------------------------------------
+
 - http://ezcomponents.org/docs/api/trunk/MvcTools/ezcMvcRequest.html
 - L'objet de requête contient les données de la requête
 - Il doit être créé par le parseur de requêtes en premier lieu. Il peut également être retourné par le contrôleur, dans le cas d'une redirection interne.
@@ -150,6 +152,7 @@ Commentaires sur les classes existantes :
 
 
 2. La classe mère ezcMvcRequestParser
+-------------------------------------
 - ...
 - ...
 
