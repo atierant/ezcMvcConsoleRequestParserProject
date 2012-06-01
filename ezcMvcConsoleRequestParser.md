@@ -78,6 +78,7 @@ Par contre il peut être intéressant de se pencher sur les flux I/O
 -----------------------------
 
 Check si on est en CLI :
+------------------------
 
 if (PHP_SAPI != "cli") {
     exit;
@@ -119,6 +120,49 @@ This will set $_GET['a'] to '1' and $_GET['b'] to array('2', '3').
 -------------------------------
 read arguments from $argv of the form --name=VALUE and -flag.
 http://www.php.net/manual/fr/features.commandline.php#86616
+To allow a "zero" option value : http://www.php.net/manual/fr/features.commandline.php#86130
+
+________________________________
+To Do :
+-------
+
+1. Vérifier qu'on soit bien en mode CLI et que les arguments soient autorisés (cf. partie "Check si on est en CLI")
+2. Initialiser l'objet de retour ezcMvcRequest
+3. Parser les exec/options/flags/arguments de la ligne de commande (+ possibilité de n'avoir rien de renvoyé dans la LDC, cf. zero option value)
+4. En fonction des retours, peupler l'objet ezcMvcRequest
+5. 
+
+Commentaires sur les classes existantes :
+-----------------------------------------
+1. La classe ezcMvcRequest, objet de transition
+- http://ezcomponents.org/docs/api/trunk/MvcTools/ezcMvcRequest.html
+- L'objet de requête contient les données de la requête
+- Il doit être créé par le parseur de requêtes en premier lieu. Il peut également être retourné par le contrôleur, dans le cas d'une redirection interne.
+- Il est composé des données dépendantes du protocole dans l'objet ezcMvcRawRequest, dans sa propriété $raw.
+- Il détient aussi plusieurs structures qui contiennent des données faisant abstraction du protocole de provenance.
+- Ces données sont stockées dans les propriétés suivantes :
+    + $files: tableau d'instances de ezcMvcRequestFile.
+    + $cache: instance de ezcMvcRequestCache
+    + $content: instance de ezcMvcRequestContent
+    + $agent: instance de ezcMvcRequestAgent
+    + $authentication: instance de ezcMvcRequestAuthentication
+- Il contient les variables de la requête dans un tableau $request[clé]=>valeur.
 
 
+2. La classe mère ezcMvcRequestParser
+- ...
+- ...
 
+3. La classe ezcMvcHttpRequestParser
+- ...
+- ...
+
+4. La classe ezcMvcMailRequestParser
+- ...
+- ...
+
+5. Notre classe ezcMvcConsoleRequestParser
+- Avec quoi la peupler au vu de ce qui a été observé sur les classes précédentes ?
+- Qu'est-ce qui est pertinent ?
+- Qu'est-ce qu'il est possible d'obtenir via le serveur
+- Qu'est-ce qu'il est possible d'obtenir via les paramètres d'une LDC

@@ -1,4 +1,5 @@
 <?php
-require_once 'MyMVCTools/ezc_bootstrap.php';
+require_once 'ezc/Base/ezc_bootstrap.php';
+
 
 
