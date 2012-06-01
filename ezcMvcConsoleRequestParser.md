@@ -78,7 +78,7 @@ Par contre il peut être intéressant de se pencher sur les flux I/O
 -----------------------------
 
 Check si on est en CLI :
-------------------------
+
 
 if (PHP_SAPI != "cli") {
     exit;
@@ -123,14 +123,7 @@ http://www.php.net/manual/fr/features.commandline.php#86616
 To allow a "zero" option value : http://www.php.net/manual/fr/features.commandline.php#86130
 
 ________________________________
-To Do :
--------
 
-1. Vérifier qu'on soit bien en mode CLI et que les arguments soient autorisés (cf. partie "Check si on est en CLI")
-2. Initialiser l'objet de retour ezcMvcRequest
-3. Parser les exec/options/flags/arguments de la ligne de commande (+ possibilité de n'avoir rien de renvoyé dans la LDC, cf. zero option value)
-4. En fonction des retours, peupler l'objet ezcMvcRequest
-5. 
 
 Commentaires sur les classes existantes :
 -----------------------------------------
@@ -157,15 +150,29 @@ Commentaires sur les classes existantes :
 - ...
 
 3. La classe ezcMvcHttpRequestParser
+------------------------------------
 - ...
 - ...
 
 4. La classe ezcMvcMailRequestParser
+-------------------------------------
 - ...
 - ...
 
 5. Notre classe ezcMvcConsoleRequestParser
+------------------------------------------
 - Avec quoi la peupler au vu de ce qui a été observé sur les classes précédentes ?
 - Qu'est-ce qui est pertinent ?
 - Qu'est-ce qu'il est possible d'obtenir via le serveur
 - Qu'est-ce qu'il est possible d'obtenir via les paramètres d'une LDC
+
+-----------------------------------
+
+To Do :
+-------
+
+1. Vérifier qu'on soit bien en mode CLI et que les arguments soient autorisés (cf. partie "Check si on est en CLI")
+2. Initialiser l'objet de retour ezcMvcRequest
+3. Parser les exec/options/flags/arguments de la ligne de commande (+ possibilité de n'avoir rien de renvoyé dans la LDC, cf. zero option value)
+4. En fonction des retours, peupler l'objet ezcMvcRequest
+5. 
