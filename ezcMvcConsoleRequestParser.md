@@ -60,7 +60,7 @@ Le protocole ne sert que d'implémentation pour envoyer des ordres. A la base il
 Le principal souci pour notre cas de ligne de commande est d'avoir un adaptateur/interpréteur assez souple pour interpréter correctement la ligne de commande émise. Dans les protocoles http, smtp, les paramètres & ordres sont bien définis. 
 Notre classe n'a pas la responsabilité de vérifier l'information reçue, seulement de récupérer ce qui est récupérable, de standardiser l'information dans un objet (ezcMvcRequest) qu'elle aura réussi à construire, et de transmettre cet objet.
 La question à se poser est : "Quelles sont les informations disponibles en CLI et dans quel partie d'une requête elles peuvent se ranger ?"
-Nous avons un un système s'intérrogeant à la base par du http. en correspondance nous avons une classe qui parse la requête HTTP et la transforme en objet. Nous voulons avoir un système s'intérrogeant via la console.
+Nous avons un un système s'intérrogeant à la base par du http. En correspondance nous avons une classe qui parse la requête HTTP et la transforme en objet. Nous voulons avoir un système s'intérrogeant via la console.
 
 Problématique :
 ---------------
@@ -188,6 +188,16 @@ http://www.php.net/manual/fr/features.commandline.php#86616
 
 To allow a "zero" option value : http://www.php.net/manual/fr/features.commandline.php#86130  
 
+-------------------------------
+Parser les arguments d'une ligne de commandes :  
+http://www.phpcs.com/codes/PARSING-ARGUMENTS-LIGNE-COMMANDE_35281.aspx
+
+-------------------------------
+
+http://www.faqs.org/rfcs/rfc3875.html      /!\ POUR CGI !!!
+
+http://www.iso.org/iso/iso_catalogue/catalogue_tc/catalogue_detail.htm?csnumber=36769
+
 ________________________________
 
 
@@ -195,7 +205,7 @@ Commentaires sur les classes existantes :
 -----------------------------------------
 1. La classe ezcMvcRequest, objet de transition
 -----------------------------------------------
-
+- Classe située dans ezc/MvcTools/structs/request.php
 - http://ezcomponents.org/docs/api/trunk/MvcTools/ezcMvcRequest.html
 - L'objet de requête contient les données de la requête
 - Il doit être créé par le parseur de requêtes en premier lieu. Il peut également être retourné par le contrôleur, dans le cas d'une redirection interne.
@@ -209,11 +219,20 @@ Commentaires sur les classes existantes :
     + $authentication: instance de ezcMvcRequestAuthentication
 - Il contient les variables de la requête dans un tableau $request[clé]=>valeur.
 
-
 2. La classe mère ezcMvcRequestParser
 -------------------------------------
-- ...
-- ...
+- Classe située dans ezc/MvcTools/interfaces/request_filter.php
+- Il s'agit d'une interface (bien que Classe) devant être implémentée par tous les request parser en héritant.
+- Un request parser prend la première requête brute et crée un objet abstrait de cette ezcMvcRequest.
+- Elle contient la propriété :
+	+ $prefix : string contenant le préfixe de l'URL  qui devrait être retiré des propriétés de l'URL.
+- Elle contient les variables suivantes :
+	+ $properties : Un tableau(chaine=>mixte) (protected) qui contient les propriétés de la classe.
+	+ $request : un objet MvcRequest (protected) qui contient la structure de la requête.
+- createRequest() est une méthode abstraite devant retourner un MvcRequest. Cette méthode doit lire les données de la requête brute avec tous les moyens nécessaires et construit un objet ezcMvcRequest.
+Cette méthode est redéfinie dans les deux descendants existants :
+	+ ezcMvcHttpRequestParser::createRequest() 	Utilise les données des variables superglobales
+	+ ezcMvcMailRequestParser::createRequest() 	Utilise stdin, ou les données fournies dans la string $mailMessage passée en paramètres.
 
 3. La classe ezcMvcHttpRequestParser
 ------------------------------------
@@ -231,6 +250,7 @@ Commentaires sur les classes existantes :
 - Qu'est-ce qui est pertinent ?
 - Qu'est-ce qu'il est possible d'obtenir via le serveur
 - Qu'est-ce qu'il est possible d'obtenir via les paramètres d'une LDC
+- Se documenter sur les variables globales CLI php
 
 -----------------------------------
 

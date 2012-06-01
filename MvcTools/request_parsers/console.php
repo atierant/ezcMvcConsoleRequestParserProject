@@ -84,7 +84,9 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
      */
     protected function processProtocol()
     {
+
         $req = $this->request;
+	$req->protocol = 'cli'
 
 /*
 #        if ( isset( $_SERVER['REQUEST_METHOD'] ) )
@@ -146,6 +148,7 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
      */
     protected function processReferrer()
     {
+	$this->request->referrer = null;
 /*
 #        $this->request->referrer = isset( $_SERVER['HTTP_REFERER'] )
 #            ? $_SERVER['HTTP_REFERER']
@@ -175,15 +178,16 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
 
     /**
      * Processes the request ID from host and URI.
+     * @note Only when you define specific arguments
      */
     protected function processRequestId()
     {
-        $this->request->requestId = $this->request->host . $this->request->uri;
+        //$this->request->requestId = $this->request->host . $this->request->uri;
     }
 
     /**
      * Processes the request body for PUT requests.
-     * at@synap.fr note : Doesn't have sense under CLI mode. 
+     * @note : Doesn't have sense under CLI mode. 
      */
     protected function processBody()
     {
@@ -200,13 +204,16 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
 
     /**
      * Proccesses the HTTP Accept headers into the ezcMvcRequestAccept struct.
-     * at@synap.fr note : Doesn't have sense under CLI mode. 
      */
     protected function processAcceptHeaders()
     {
         $this->request->accept = new ezcMvcRequestAccept;
         $accept = $this->request->accept;
 
+	$map = array(
+            /*'HTTP_ACCEPT_LANGUAGE' => 'language',
+            'LANGUAGE' => 'server_language',*/
+        );
 /*
 #        $map = array(
 #            'HTTP_ACCEPT' => 'types',
@@ -214,52 +221,51 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
 #            'HTTP_ACCEPT_ENCODING' => 'encodings',
 #            'HTTP_ACCEPT_LANGUAGE' => 'languages',
 #        );
-
-#        foreach ( $map as $var => $property )
-#        {
-#            if ( !isset( $_SERVER[$var] ) )
-#            {
-#                $accept->$property = array();
-#                continue;
-#            }
-#            $parts = explode( ',', $_SERVER[$var] );
-#            $tmpPriorities = array();
-#            foreach ( $parts as $part )
-#            {
-#                $priPart = explode( ';q=', $part );
-#                if ( count( $priPart ) == 2 )
-#                {
-#                    $tmpPriorities[$priPart[0]] = $priPart[1];
-#                }
-#                else
-#                {
-#                    $tmpPriorities[$part] = 1;
-#                }
-#            }
-#            asort( $tmpPriorities );
-#            $accept->$property = array_keys( array_reverse( $tmpPriorities ) );
-#        }
 */
+
+        foreach ( $map as $var => $property )
+        {
+            if ( !isset( $_SERVER[$var] ) )
+            {
+                $accept->$property = array();
+                continue;
+            }
+            $parts = explode( ',', $_SERVER[$var] );
+            $tmpPriorities = array();
+            foreach ( $parts as $part )
+            {
+                $priPart = explode( ';q=', $part );
+                if ( count( $priPart ) == 2 )
+                {
+                    $tmpPriorities[$priPart[0]] = $priPart[1];
+                }
+                else
+                {
+                    $tmpPriorities[$part] = 1;
+                }
+            }
+            asort( $tmpPriorities );
+            $accept->$property = array_keys( array_reverse( $tmpPriorities ) );
+        }
     }
 
     /**
      * Proccesses the User Agent header into the ezcMvcRequestUserAgent struct.
-     * at@synap.fr note : Doesn't have sense under CLI mode. 
      */
     protected function processUserAgentHeaders()
     {
         $this->request->agent = new ezcMvcRequestUserAgent;
         $agent = $this->request->agent;
-/*
-#        $agent->agent = isset( $_SERVER['HTTP_USER_AGENT'] )
-#            ? $_SERVER['HTTP_USER_AGENT']
-#            : null;
-*/
+
+        $agent->agent = isset( $_SERVER['TERM']; )
+            ? $_SERVER['TERM']
+            : null;
+
     }
 
     /**
      * Processes uploaded files.
-     * at@synap.fr note : Doesn't have sense under CLI mode. 
+     * @note : Doesn't have sense under CLI mode. 
      */
 /*
 #    protected function processFiles()
@@ -280,7 +286,7 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
 
     /**
      * Process cookies
-     * at@synap.fr note : Doesn't have sense under CLI mode. 
+     * @note : Doesn't have sense under CLI mode. 
      */
     protected function processCookies()
     {
