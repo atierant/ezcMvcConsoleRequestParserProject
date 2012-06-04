@@ -28,12 +28,10 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
     public function createRequest()
     {
         $this->request = $this->createRequestObject();
-        $this->processStandardHeaders();
-        $this->processAcceptHeaders();
-        $this->processUserAgentHeaders();
-        $this->processFiles();
-        $this->processAuthVars();
-        $this->processCookies();
+
+        $this->processStandardContent();
+        $this->processAccept();
+        $this->processUserAgent();
 
         $this->request->raw = &$_SERVER;
 
@@ -51,62 +49,28 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
     }
 
     /**
-     * Processes the basic HTTP auth variables is set
+     * Processes the standard content that is not subdivided into other structs.
      */
-    protected function processAuthVars()
+    protected function processStandardContent()
     {
-        $req = $this->request;
-/*
-#        if ( isset( $_SERVER['PHP_AUTH_USER'] ) && isset( $_SERVER['PHP_AUTH_PW'] ) )
-#        {
-#            $req->authentication = new ezcMvcRequestAuthentication( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] );
-#        }
-*/
+/**/    $this->processProtocol();	// Protocol description in a normalized form
+/**/    $this->processHost();		// Hostname of the requested server
+/**/    $this->processDate();		// Date of the request
+/**/    $this->processVariables();	// Request variables
+/**/    $this->processReferrer();	// Request ID of the referring URI in the same format as $requestId
+/**/    $this->processUri();		// Uri of the requested resource
+/**/    $this->processBody();		// Request body
+/**/    $this->processRequestId();	// Full Uri - combination of host name and uri in a protocol independent order
     }
 
-    /**
-     * Processes the standard headers that are not subdivided into other structs.
-     */
-    protected function processStandardHeaders()
-    {
-        $this->processProtocol();
-        $this->processHost();
-        $this->processDate();
-        $this->processVariables();
-        $this->processReferrer();
-        $this->processUri();
-        $this->processBody();
-        $this->processRequestId();
-    }
 
     /**
      * Processes the request protocol. 
      */
     protected function processProtocol()
     {
-
         $req = $this->request;
 	$req->protocol = 'cli'
-
-/*
-#        if ( isset( $_SERVER['REQUEST_METHOD'] ) )
-#        {
-#            switch ( $_SERVER['REQUEST_METHOD'] )
-#            {
-#                case 'POST':
-#                    $req->protocol = 'http-post';
-#                    break;
-#                case 'PUT':
-#                    $req->protocol = 'http-put';
-#                    break;
-#                case 'DELETE':
-#                    $req->protocol = 'http-delete';
-#                    break;
-#                default:
-#                    $req->protocol = 'http-get';
-#            }
-#        }
-*/
     }
 
     /**
@@ -114,15 +78,7 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
      */
     protected function processHost()
     {
-/*
-#        $this->request->host = isset( $_SERVER['HTTP_HOST'] )
-#            ? $_SERVER['HTTP_HOST']
-#            : (
-#                isset( $_SERVER['SERVER_NAME'] )
-#                    ? $_SERVER['SERVER_NAME']
-#                    : 'localhost.localdomain'
-#            );
-*/
+	this->request->host = null;
     }
 
     /**
@@ -149,11 +105,6 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
     protected function processReferrer()
     {
 	$this->request->referrer = null;
-/*
-#        $this->request->referrer = isset( $_SERVER['HTTP_REFERER'] )
-#            ? $_SERVER['HTTP_REFERER']
-#            : null;
-*/
     }
 
     /**
@@ -161,98 +112,80 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
      */
     protected function processUri()
     {
-        $req = $this->request;
-
-/*
-#        $req->uri = isset( $_SERVER['REQUEST_URI'] )
-#            ? $_SERVER['REQUEST_URI']
-#            : '';
-#        // remove the query string from the URI
-#        $req->uri = preg_replace( '@\?.*$@', '', $req->uri );
-#        // url decode the uri
-#        $req->uri = urldecode( $req->uri );
-#        // remove the prefix from the URI
-#        $req->uri = preg_replace( '@^' . preg_quote( $this->properties['prefix'] ) . '@', '', $req->uri );
-*/
+        $this->request->uri = null;
     }
 
     /**
      * Processes the request ID from host and URI.
-     * @note Only when you define specific arguments
      */
     protected function processRequestId()
     {
-        //$this->request->requestId = $this->request->host . $this->request->uri;
+        $this->request->requestId = null;
     }
 
     /**
      * Processes the request body for PUT requests.
-     * @note : Doesn't have sense under CLI mode. 
      */
     protected function processBody()
     {
-        $req = $this->request;
-
-/*
-#        if ( $req->protocol == 'http-put' )
-#        {
-#            $req->body = file_get_contents( "php://input" );
-#        }
-*/
-
+        $this->request->body = null;
     }
 
+  /////////////////////////////////////////////////
+ /////////// processAccept ///////////////////////
+/////////////////////////////////////////////////
+
     /**
-     * Proccesses the HTTP Accept headers into the ezcMvcRequestAccept struct.
+     * Proccesses the Accept part into the ezcMvcRequestAccept struct.
+     * 
+     * $accept : Request content type informations.
+     * object ezcMvcRequestAccept : Struct which defines client-acceptable contents
+     * Member variables of this object :
+     *     $types	array 	 
+     *     $charsets	array 	 
+     *     $languages	array 	 
+     *     $encodings	array 	 
      */
-    protected function processAcceptHeaders()
+    protected function processAccept()
     {
         $this->request->accept = new ezcMvcRequestAccept;
         $accept = $this->request->accept;
 
-	$map = array(
-            /*'HTTP_ACCEPT_LANGUAGE' => 'language',
-            'LANGUAGE' => 'server_language',*/
-        );
-/*
-#        $map = array(
-#            'HTTP_ACCEPT' => 'types',
-#            'HTTP_ACCEPT_CHARSET' => 'charsets',
-#            'HTTP_ACCEPT_ENCODING' => 'encodings',
-#            'HTTP_ACCEPT_LANGUAGE' => 'languages',
-#        );
-*/
+	// Encodings
+	$accept->encodings = array();
 
-        foreach ( $map as $var => $property )
-        {
-            if ( !isset( $_SERVER[$var] ) )
-            {
-                $accept->$property = array();
-                continue;
-            }
-            $parts = explode( ',', $_SERVER[$var] );
-            $tmpPriorities = array();
-            foreach ( $parts as $part )
-            {
-                $priPart = explode( ';q=', $part );
-                if ( count( $priPart ) == 2 )
-                {
-                    $tmpPriorities[$priPart[0]] = $priPart[1];
-                }
-                else
-                {
-                    $tmpPriorities[$part] = 1;
-                }
-            }
-            asort( $tmpPriorities );
-            $accept->$property = array_keys( array_reverse( $tmpPriorities ) );
-        }
+	// Charset
+	if ( !isset( $_SERVER['LANG'] ) )
+	{
+		$accept->charsets = array();
+	}
+	else
+	{
+		$accept->charsets = array();
+		$charsetTmp = explode( '.', $_SERVER['LANG'] );
+		$accept->charsets[0] = $charsetTmp[1];
+	}
+
+	// Languages
+	if ( !isset( $_SERVER['LANGUAGE'] ) )
+	{
+		$accept->languages = array();
+	}
+	else
+	{
+		$accept->languages = array();
+		$accept->languages = explode( ':', $_SERVER['LANGUAGE'] );
+	}
+
+	// Types
+		$accept->types = array();
     }
 
     /**
-     * Proccesses the User Agent header into the ezcMvcRequestUserAgent struct.
+     * Proccesses the UserAgent (terminal used) into the ezcMvcRequestUserAgent struct.
+     * @ote Returns the terminal type
      */
-    protected function processUserAgentHeaders()
+    protected function processUserAgent()
     {
         $this->request->agent = new ezcMvcRequestUserAgent;
         $agent = $this->request->agent;
@@ -260,43 +193,6 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
         $agent->agent = isset( $_SERVER['TERM']; )
             ? $_SERVER['TERM']
             : null;
-
-    }
-
-    /**
-     * Processes uploaded files.
-     * @note : Doesn't have sense under CLI mode. 
-     */
-/*
-#    protected function processFiles()
-#    {
-#        foreach ( $_FILES as $name => $info )
-#        {
-#            $file = new ezcMvcRequestFile;
-#            $file->mimeType = $info['type'];
-#            $file->name = $info['name'];
-#            $file->size = $info['size'];
-#            $file->status = $info['error'];
-#            $file->tmpPath = $info['tmp_name'];
-
-#            $this->request->files[] = $file;
-#        }
-#    }
-*/
-
-    /**
-     * Process cookies
-     * @note : Doesn't have sense under CLI mode. 
-     */
-    protected function processCookies()
-    {
-/*
-#        foreach ( $_COOKIE as $name => $value )
-#        {
-#            $cookie = new ezcMvcRequestCookie( $name, $value );
-#            $this->request->cookies[] = $cookie;
-#        }
-*/
     }
 }
 ?>
