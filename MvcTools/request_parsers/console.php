@@ -70,7 +70,7 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
     protected function processProtocol()
     {
         $req = $this->request;
-	$req->protocol = 'cli'
+	$req->protocol = 'cli';
     }
 
     /**
@@ -78,7 +78,7 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
      */
     protected function processHost()
     {
-	this->request->host = null;
+	$this->request->host = null;
     }
 
     /**
@@ -128,12 +128,14 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
      */
     protected function processBody()
     {
-        $this->request->body = null;
-    }
+        $req = $this->request;
+	$arguments = $_SERVER["argv"];
 
-  /////////////////////////////////////////////////
- /////////// processAccept ///////////////////////
-/////////////////////////////////////////////////
+        if ( $req->protocol == 'cli' )
+        {
+            $req->body = $arguments;
+        }
+    }
 
     /**
      * Proccesses the Accept part into the ezcMvcRequestAccept struct.
@@ -154,7 +156,7 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
 	// Encodings
 	$accept->encodings = array();
 
-	// Charset
+	// Charsets
 	if ( !isset( $_SERVER['LANG'] ) )
 	{
 		$accept->charsets = array();
@@ -178,7 +180,7 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
 	}
 
 	// Types
-		$accept->types = array();
+	$accept->types = array();
     }
 
     /**
@@ -190,7 +192,7 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
         $this->request->agent = new ezcMvcRequestUserAgent;
         $agent = $this->request->agent;
 
-        $agent->agent = isset( $_SERVER['TERM']; )
+        $agent->agent = isset( $_SERVER['TERM'] )
             ? $_SERVER['TERM']
             : null;
     }
