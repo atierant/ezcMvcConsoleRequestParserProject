@@ -70,7 +70,7 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
     protected function processProtocol()
     {
         $req = $this->request;
-    $req->protocol = 'cli';
+        $req->protocol = 'cli';
     }
 
     /**
@@ -78,7 +78,7 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
      */
     protected function processHost()
     {
-    $this->request->host = 'localhost';
+        $this->request->host = 'localhost';
     }
 
     /**
