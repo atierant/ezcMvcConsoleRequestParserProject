@@ -120,16 +120,13 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
      */
     protected function processRequestId()
     {
-        //$this->request->requestId = null;
+        $this->request->requestId = '/';
+
         if ($_SERVER["argc"] > 1)
         {
             $arguments = $_SERVER["argv"];
             array_shift($arguments);
-            $this->request->requestId = implode("/", $arguments);
-        }
-        else
-        {
-            $this->request->requestId = "/";
+            $this->request->requestId .= implode("/", $arguments);
         }
     }
 
