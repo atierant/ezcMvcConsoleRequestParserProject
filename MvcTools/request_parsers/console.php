@@ -78,7 +78,7 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
      */
     protected function processHost()
     {
-    $this->request->host = null;
+    $this->request->host = 'localhost';
     }
 
     /**
