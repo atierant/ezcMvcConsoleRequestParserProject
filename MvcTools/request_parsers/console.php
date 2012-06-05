@@ -53,14 +53,14 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
      */
     protected function processStandardContent()
     {
-/**/    $this->processProtocol();	// Protocol description in a normalized form
-/**/    $this->processHost();		// Hostname of the requested server
-/**/    $this->processDate();		// Date of the request
-/**/    $this->processVariables();	// Request variables
-/**/    $this->processReferrer();	// Request ID of the referring URI in the same format as $requestId
-/**/    $this->processUri();		// Uri of the requested resource
-/**/    $this->processBody();		// Request body
-/**/    $this->processRequestId();	// Full Uri - combination of host name and uri in a protocol independent order
+        $this->processProtocol();    // Protocol description in a normalized form
+        $this->processHost();        // Hostname of the requested server
+        $this->processDate();        // Date of the request
+        $this->processVariables();    // Request variables
+        $this->processReferrer();    // Request ID of the referring URI in the same format as $requestId
+        $this->processUri();        // Uri of the requested resource
+        $this->processBody();        // Request body
+        $this->processRequestId();    // Full Uri - combination of host name and uri in a protocol independent order
     }
 
 
@@ -70,7 +70,7 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
     protected function processProtocol()
     {
         $req = $this->request;
-	$req->protocol = 'cli';
+    $req->protocol = 'cli';
     }
 
     /**
@@ -78,7 +78,7 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
      */
     protected function processHost()
     {
-	$this->request->host = null;
+    $this->request->host = null;
     }
 
     /**
@@ -104,7 +104,7 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
      */
     protected function processReferrer()
     {
-	$this->request->referrer = null;
+        $this->request->referrer = null;
     }
 
     /**
@@ -116,11 +116,21 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
     }
 
     /**
-     * Processes the request ID from host and URI.
+     * Processes the request ID from arguments list given in the command line.
      */
     protected function processRequestId()
     {
-        $this->request->requestId = null;
+        //$this->request->requestId = null;
+        if (SERVER["argc"] > 1)
+        {
+            $arguments = $_SERVER["argv"];
+            array_shift($arguments);
+            $this->request->requestId = implode("/", $arguments);
+        }
+        else
+        {
+            $this->request->requestId = "/";
+        }
     }
 
     /**
@@ -129,7 +139,7 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
     protected function processBody()
     {
         $req = $this->request;
-	$arguments = $_SERVER["argv"];
+        $arguments = $_SERVER["argv"];
 
         if ( $req->protocol == 'cli' )
         {
@@ -143,44 +153,44 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
      * $accept : Request content type informations.
      * object ezcMvcRequestAccept : Struct which defines client-acceptable contents
      * Member variables of this object :
-     *     $types	array 	 
-     *     $charsets	array 	 
-     *     $languages	array 	 
-     *     $encodings	array 	 
+     *     $types    array      
+     *     $charsets    array      
+     *     $languages    array      
+     *     $encodings    array      
      */
     protected function processAccept()
     {
         $this->request->accept = new ezcMvcRequestAccept;
         $accept = $this->request->accept;
 
-	// Encodings
-	$accept->encodings = array();
+        // Encodings
+        $accept->encodings = array();
 
-	// Charsets
-	if ( !isset( $_SERVER['LANG'] ) )
-	{
-		$accept->charsets = array();
-	}
-	else
-	{
-		$accept->charsets = array();
-		$charsetTmp = explode( '.', $_SERVER['LANG'] );
-		$accept->charsets[0] = $charsetTmp[1];
-	}
+        // Charsets
+        if ( !isset( $_SERVER['LANG'] ) )
+        {
+            $accept->charsets = array();
+        }
+        else
+        {
+            $accept->charsets = array();
+            $charsetTmp = explode( '.', $_SERVER['LANG'] );
+            $accept->charsets[0] = $charsetTmp[1];
+        }
 
-	// Languages
-	if ( !isset( $_SERVER['LANGUAGE'] ) )
-	{
-		$accept->languages = array();
-	}
-	else
-	{
-		$accept->languages = array();
-		$accept->languages = explode( ':', $_SERVER['LANGUAGE'] );
-	}
+        // Languages
+        if ( !isset( $_SERVER['LANGUAGE'] ) )
+        {
+            $accept->languages = array();
+        }
+        else
+        {
+            $accept->languages = array();
+            $accept->languages = explode( ':', $_SERVER['LANGUAGE'] );
+        }
 
-	// Types
-	$accept->types = array();
+        // Types
+        $accept->types = array();
     }
 
     /**
