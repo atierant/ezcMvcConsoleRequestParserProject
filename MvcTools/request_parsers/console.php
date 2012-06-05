@@ -121,7 +121,7 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
     protected function processRequestId()
     {
         //$this->request->requestId = null;
-        if (SERVER["argc"] > 1)
+        if ($_SERVER["argc"] > 1)
         {
             $arguments = $_SERVER["argv"];
             array_shift($arguments);
@@ -139,12 +139,7 @@ class ezcMvcConsoleRequestParser extends ezcMvcRequestParser
     protected function processBody()
     {
         $req = $this->request;
-        $arguments = $_SERVER["argv"];
-
-        if ( $req->protocol == 'cli' )
-        {
-            $req->body = $arguments;
-        }
+        $req->body = $_SERVER["argv"];
     }
 
     /**
